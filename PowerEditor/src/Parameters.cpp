@@ -4047,6 +4047,17 @@ void NppParameters::feedGUIParameters(TiXmlNode *node)
 			}
 		}
 
+		else if (!lstrcmp(nm, TEXT("TaskListHideDiskette")))
+		{
+			TiXmlNode *n = childNode->FirstChild();
+			if (n)
+			{
+				const TCHAR* val = n->Value();
+				if (val)
+					_nppGUI._taskListHideDiskette = (!lstrcmp(val, TEXT("yes")));
+			}
+		}
+
 		else if (!lstrcmp(nm, TEXT("URL")))
 		{
 			TiXmlNode *n = childNode->FirstChild();
@@ -5018,6 +5029,7 @@ bool NppParameters::writeGUIParams()
 	bool doTaskListExist = false;
 	bool maitainIndentExist = false;
 	bool MRUExist = false;
+	bool taskListHideDisketteExist = false;
 	bool backExist = false;
 	bool URLExist = false;
 	bool globalOverrideExist = false;
@@ -5320,6 +5332,17 @@ bool NppParameters::writeGUIParams()
 			else
 				childNode->InsertEndChild(TiXmlText(pStr));
 		}
+		else if (!lstrcmp(nm, TEXT("TaskListHideDiskette")))
+		{
+			taskListHideDisketteExist = true;
+			const TCHAR *pStr = _nppGUI._taskListHideDiskette ? TEXT("yes") : TEXT("no");
+
+			TiXmlNode *n = childNode->FirstChild();
+			if (n)
+				n->SetValue(pStr);
+			else
+				childNode->InsertEndChild(TiXmlText(pStr));
+		}
 		else if (!lstrcmp(nm, TEXT("URL")))
 		{
 			URLExist = true;
@@ -5610,6 +5633,11 @@ bool NppParameters::writeGUIParams()
 	if (!MRUExist)
 	{
 		insertGUIConfigBoolNode(GUIRoot, TEXT("MRU"), _nppGUI._styleMRU);
+	}
+
+	if (!taskListHideDisketteExist)
+	{
+		insertGUIConfigBoolNode(GUIRoot, TEXT("TaskListHideDiskette"), _nppGUI._taskListHideDiskette);
 	}
 
 	if (!URLExist)
